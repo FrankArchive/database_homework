@@ -8,7 +8,7 @@ services:
             - ./backend/migrations:/opt/migrations
         environment:
             - DB_URL=mysql+pymysql://root:homework@db/homework
-            - WORKERS=4
+            - WORKERS=1
 
     db:
         image: mariadb:10.4
@@ -27,6 +27,10 @@ services:
                 --wait_timeout=28800,
                 --log-warnings=0,
             ]
+    adminer:
+        image: adminer
+        ports:
+            - 8080:8080
 
     frontend:
         build: ./frontend

@@ -22,7 +22,6 @@ def create_app():
         db.init_app(app)
         mi.init_app(app, db)
         ma.init_app(app)
-        db.drop_all()
         if url.drivername.startswith("sqlite"):
             db.create_all()
         else:

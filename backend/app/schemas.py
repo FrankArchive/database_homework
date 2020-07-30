@@ -9,6 +9,8 @@ ma = Marshmallow()
 class StudentSchema(ma.SQLAlchemyAutoSchema):
     studentId = fields.Integer(attribute='id')
     className = fields.Str()
+    subjectName = fields.Str()
+    collegeName = fields.Str()
     views = {
         'public': [
             'studentId', 'name', 'birthDate', 'male',

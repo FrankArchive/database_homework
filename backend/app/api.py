@@ -9,7 +9,7 @@ api = Api(api_blueprint, version="v1", doc='/docs')
 
 
 @api.route('/student/<string:key>/<string:val>')
-class StudentEndpoint(Resource):
+class StudentSingleEndpoint(Resource):
     @staticmethod
     def get(key, val):
         try:
@@ -19,6 +19,15 @@ class StudentEndpoint(Resource):
             return StudentSchema().dump(student)
         except:
             return {'message': 'no such student'}, 404
+
+
+@api.route('/student')
+class StudentEndpoint(Resource):
+    @staticmethod
+    def get():
+        return {
+            'content': StudentSchema(many=True).dump(Student.query.all())
+        }
 
 
 @api.route('/student/firing')
