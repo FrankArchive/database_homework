@@ -51,3 +51,14 @@ def setup():
             male=True,
         ))
         db.session.commit()
+
+
+def get_scores(student):
+    scores = [0, 0, 0]
+    fails = [0, 0, 0]
+    for i in student.scores:
+        if i.first_try >= 60 or i.second_try >= 60:
+            scores[i.course.type] += i.course.credit
+        else:
+            fails[i.course.type] += i.course.credit
+    return scores, fails

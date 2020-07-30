@@ -3,6 +3,7 @@ from flask_restx import Api, Resource
 
 from .models import *
 from .schemas import StudentSchema
+from .utils import get_scores
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/v1")
 api = Api(api_blueprint, version="v1", doc='/docs')
@@ -41,19 +42,56 @@ class StudentEndpoint(Resource):
 @api.route('/student/firing')
 class StudentFiringEndpoint(Resource):
     def get(self):
-        pass
+        result = []
+        for student in Student.query.all():
+            scores, fails = get_scores(student)
+            schedule = student.cls.subject.schedule
+            if scores[0] < schedule.min_compulsory_credit:
+                result.append(student)
+            elif scores[1] < schedule.min_limited_credit:
+                result.append(student)
+            elif scores[2] < schedule.min_elective_credit:
+                result.append(student)
+
+        return StudentSchema(many=True).dump(result)
 
 
 @api.route('/student/fired')
 class StudentFiredEndpoint(Resource):
     def get(self):
-        pass
+        result = []
+        for student in Student.query.all():
+            scores, fails = get_scores(student)
+            schedule = student.cls.subject.schedule
+            if fails[0] > schedule.max_compulsory_fail_credit:
+                result.append(student)
+            elif fails[1] > schedule.max_limited_fail_credit:
+                result.append(student)
+            elif fails[2] > schedule.max_elective_fail_credit:
+                result.append(student)
+
+        return StudentSchema(many=True).dump(result)
 
 
 @api.route('/student/score')
 class StudentScoreEndpoint(Resource):
     def get(self):
-        pass
+        result = []
+        student_id = request.args.get('id')
+        if not student_id:
+            return {'message': '?'}, 404
+        student = Student.query.filter_by(id=student_id).first()
+        if not student:
+            return {'message': '?'}, 404
+        for i in student.scores:
+            result.append({
+                'courseName': i.course.name,
+                'firstScore': i.first_try,
+                'secondScore': i.second_try,
+                'courseType': i.course.type,
+                'courseCredit': i.course.credit,
+            })
+        return result
 
 
 @api.route('/student/teacher')
@@ -67,7 +105,6 @@ class NewDataEndpoint(Resource):
     @staticmethod
     def post():
         data = request.json
-        print(data.keys())
         cls = Class.query.filter_by(name=data['className']).first()
         subject = Subject.query.filter_by(name=data['subjectName']).first()
         college = College.query.filter_by(name=data['collegeName']).first()
