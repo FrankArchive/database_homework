@@ -2,10 +2,13 @@ version: "3.5"
 services:
     backend:
         build: ./backend
+        restart: always
         volumes:
             - ./backend/app:/opt/app
+            - ./backend/migrations:/opt/migrations
         environment:
             - DB_URL=mysql+pymysql://root:homework@db/homework
+            - WORKERS=4
 
     db:
         image: mariadb:10.4
@@ -16,8 +19,14 @@ services:
         volumes:
             - .data/mysql:/var/lib/mysql
         # This command is required to set important mariadb defaults
-        command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
-
+        command:
+            [
+                mysqld,
+                --character-set-server=utf8mb4,
+                --collation-server=utf8mb4_unicode_ci,
+                --wait_timeout=28800,
+                --log-warnings=0,
+            ]
 
     frontend:
         build: ./frontend

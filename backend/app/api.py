@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_restx import Api, Resource
 
-from app.models import Student
+from .models import Student
 from .schemas import StudentSchema
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/v1")
