@@ -97,7 +97,19 @@ class StudentScoreEndpoint(Resource):
 @api.route('/student/teacher')
 class StudentTeacherEndpoint(Resource):
     def get(self):
-        pass
+        result = []
+        student_id = request.args.get('id')
+        if not student_id:
+            return {'message': '?'}, 404
+        student = Student.query.filter_by(id=student_id).first()
+        if not student:
+            return {'message': '?'}, 404
+        for i in student.cls.courses:
+            result.append({
+                'courseName': i.name,
+                'teacherName': i.teacher.name
+            })
+        return result
 
 
 @api.route('/data')
