@@ -37,4 +37,4 @@ services:
         ports:
             - 80:80
         volumes:
-            - ./logs:/var/log/nginx
+            - .data/nginx/logs:/var/log/nginx
