@@ -1,0 +1,13 @@
+version: "3.5"
+services:
+    backend:
+        build: ./backend
+        volumes:
+            - ./backend/app:/opt/app
+
+    frontend:
+        build: ./frontend
+        ports:
+            - 80:80
+        volumes:
+            - ./logs:/var/log/nginx
