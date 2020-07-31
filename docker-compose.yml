@@ -4,6 +4,20 @@ services:
         build: ./backend
         volumes:
             - ./backend/app:/opt/app
+        environment:
+            - DB_URL=mysql+pymysql://root:homework@db/homework
+
+    db:
+        image: mariadb:10.4
+        restart: always
+        environment:
+            - MYSQL_ROOT_PASSWORD=homework
+            - MYSQL_DATABASE=homework
+        volumes:
+            - .data/mysql:/var/lib/mysql
+        # This command is required to set important mariadb defaults
+        command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+
 
     frontend:
         build: ./frontend
